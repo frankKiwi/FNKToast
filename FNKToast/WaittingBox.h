@@ -19,4 +19,6 @@
 + (void)dismisBox;
 //提示一个Message，若干秒之后消失
 + (void)showBoxWithMessage:(NSString *)message disMisAfterDelay:(double)delayTime;
+/***  背景不透明 */
++ (void)showBoxNoalphaWithMessage:(NSString *)message disMisAfterDelay:(double)delayTime;
 @end
