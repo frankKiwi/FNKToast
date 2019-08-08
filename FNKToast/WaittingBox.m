@@ -93,7 +93,7 @@ static WaittingBox *waitBox = nil;
         
         if (message && ![message isEqualToString:@""]) {
             _messageLabel = [[UILabel alloc] init];
-            UIFont *messageFont = [UIFont fontWithName:FONTARIAL size:isPad?25:13];
+            UIFont *messageFont = [UIFont fontWithName:FONTARIAL size:13];
             CGRect labelBounds = [message boundingRectWithSize:CGSizeMake(320.0 - SG_BOX_EDGE, 320.0 - SG_BOX_EDGE) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:messageFont} context:nil];
             _messageLabel.numberOfLines = 0;
             blackView.frame = CGRectMake(0, 0, labelBounds.size.width + SG_BOX_EDGE, labelBounds.size.height + SG_BOX_EDGE);
