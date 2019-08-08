@@ -8,7 +8,10 @@
 
 #define SG_BOX_LENGTH (100.0f)
 #define SG_BOX_EDGE (20.0f)
+#define FONTARIAL @"Arial"
 
+#define SCREEN_WIDH    [UIScreen mainScreen].bounds.size.width
+#define SCREEN_HEIGHT  [UIScreen mainScreen].bounds.size.height
 
 #import "WaittingBox.h"
 
@@ -28,9 +31,9 @@ static WaittingBox *waitBox = nil;
     self = [super init];
     if (self) {
         
-        CGSize screenSize = [DeviceInfoHelper getScreenFrame].size;
+        CGSize screenSize = [UIScreen mainScreen].bounds.size;
         self.backgroundColor = [UIColor clearColor];
-        self.frame = [DeviceInfoHelper getScreenFrame];
+        self.frame = [UIScreen mainScreen].bounds;
         
         blackView = [[UIView alloc] init];
         blackView.backgroundColor = [UIColor blackColor];
@@ -44,7 +47,7 @@ static WaittingBox *waitBox = nil;
         
         if (message && ![message isEqualToString:@""]) {
             _messageLabel = [[UILabel alloc] init];
-            UIFont *messageFont = [UIFont fontWithName:FONTARIAL size:isPad?25:17];
+            UIFont *messageFont = [UIFont fontWithName:FONTARIAL size:17];
             CGRect labelBounds = [message boundingRectWithSize:CGSizeMake(320.0 - SG_BOX_EDGE, 320.0 - SG_BOX_EDGE) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:messageFont} context:nil];
             _messageLabel.numberOfLines = 0;
             blackView.frame = CGRectMake(0, 0, labelBounds.size.width + SG_BOX_EDGE, labelBounds.size.height + SG_BOX_EDGE);
@@ -70,15 +73,14 @@ static WaittingBox *waitBox = nil;
     }
     return self;
 }
-
 - (instancetype)initWithMesage:(NSString *)message
 {
     self = [super init];
     if (self) {
         
-        CGSize screenSize = [DeviceInfoHelper getScreenFrame].size;
+        CGSize screenSize = [UIScreen mainScreen].bounds.size;
         self.backgroundColor = [UIColor clearColor];
-        self.frame = [DeviceInfoHelper getScreenFrame];
+        self.frame = [UIScreen mainScreen].bounds;
         
         blackView = [[UIView alloc] init];
         blackView.backgroundColor = [UIColor blackColor];
@@ -118,6 +120,27 @@ static WaittingBox *waitBox = nil;
     return self;
 }
 
+/***  背景不透明 */
++ (void)showBoxNoalphaWithMessage:(NSString *)message disMisAfterDelay:(double)delayTime
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!waitBox) {
+            waitBox = [[WaittingBox alloc] initWithMesage:message];
+            [[UIApplication sharedApplication].keyWindow.rootViewController.view addSubview:waitBox];
+            [[UIApplication sharedApplication].keyWindow.rootViewController.view bringSubviewToFront:waitBox];
+            [NSTimer scheduledTimerWithTimeInterval:delayTime target:[WaittingBox class] selector:@selector(fadeOutBox) userInfo:nil repeats:NO];
+        }
+        else
+        {
+            [waitBox removeFromSuperview];
+            waitBox = nil;
+            waitBox = [[WaittingBox alloc] initWithMesage:message];
+            [[UIApplication sharedApplication].keyWindow.rootViewController.view addSubview:waitBox];
+            [NSTimer scheduledTimerWithTimeInterval:delayTime target:[WaittingBox class] selector:@selector(fadeOutBox) userInfo:nil repeats:NO];
+        }
+        
+    });
+}
 
 
 + (void)showBox
@@ -146,28 +169,6 @@ static WaittingBox *waitBox = nil;
             [waitBox removeFromSuperview];
             waitBox = nil;
             waitBox = [[WaittingBox alloc] initWithMessage:message];
-            [[UIApplication sharedApplication].keyWindow.rootViewController.view addSubview:waitBox];
-            [NSTimer scheduledTimerWithTimeInterval:delayTime target:[WaittingBox class] selector:@selector(fadeOutBox) userInfo:nil repeats:NO];
-        }
-        
-    });
-}
-
-/***  背景不透明 */
-+ (void)showBoxNoalphaWithMessage:(NSString *)message disMisAfterDelay:(double)delayTime
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (!waitBox) {
-            waitBox = [[WaittingBox alloc] initWithMesage:message];
-            [[UIApplication sharedApplication].keyWindow.rootViewController.view addSubview:waitBox];
-            [[UIApplication sharedApplication].keyWindow.rootViewController.view bringSubviewToFront:waitBox];
-            [NSTimer scheduledTimerWithTimeInterval:delayTime target:[WaittingBox class] selector:@selector(fadeOutBox) userInfo:nil repeats:NO];
-        }
-        else
-        {
-            [waitBox removeFromSuperview];
-            waitBox = nil;
-            waitBox = [[WaittingBox alloc] initWithMesage:message];
             [[UIApplication sharedApplication].keyWindow.rootViewController.view addSubview:waitBox];
             [NSTimer scheduledTimerWithTimeInterval:delayTime target:[WaittingBox class] selector:@selector(fadeOutBox) userInfo:nil repeats:NO];
         }
